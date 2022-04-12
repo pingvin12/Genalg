@@ -9,7 +9,7 @@ class EntityLister:
 
     def getPopulationbody(self):
         s = np.array([_.get_body() for _ in self.newPop.flat])
-        return s[0][0]
+        return s[0]
     def printPopulationHash(self):
         for x in self.newPop.flat:
             print(x.get_hash())
