@@ -7,9 +7,9 @@ class EntityLister:
         self.newPop = np.empty((sol_per_pop, num_weights), dtype=object)
         self.newPop.flat = [Model.Entity.Entity(np.random.choice(genes, size=1)) for _ in self.newPop.flat]
 
-    def printPopulation(self):
-        for x in self.newPop.flat:
-            print(x.get_body())
+    def getPopulationbody(self):
+        s = np.array([_.get_body() for _ in self.newPop.flat])
+        return s[0][0]
     def printPopulationHash(self):
         for x in self.newPop.flat:
             print(x.get_hash())
