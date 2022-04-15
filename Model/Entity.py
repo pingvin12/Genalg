@@ -8,6 +8,7 @@ class Entity:
         self.parent = None
 
     def get_body(self) -> str: return self.body
+    def set_body(self, body : str): self.body = body
 
     def get_hash(self) -> str: return self.hash
 

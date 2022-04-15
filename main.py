@@ -13,19 +13,13 @@ for x in filex.readlines():
         continue
     else:
         genes.append(s)
-genes = np.array(genes)
+genes = np.array(genes, dtype=object)
 el = eli.EntityLister(3, 3, genes)
-
-
-@app.route('/save')
-def save():
-    s = pd.DataFrame(genes)
-    return s.to_html()
-
 
 @app.route('/')
 def onstart():
-    return el.getPopulationbody()
+    el.start_evolution(10)
+    return el.getEvolutionDF().to_html()
 
 
 if __name__ == '__main__':
