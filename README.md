@@ -1,9 +1,8 @@
 # GeneticAlgStrSimilarity
-A Genetic algorithm solution made with python
+A Genetic algorithm solution made with python.
 
 
 
-
-Used libraries:
-Pandas
-Numpy
+Mainly used libraries:
+- Pandas
+- Numpy
