@@ -26,21 +26,21 @@ class EntityLister:
     def getEntityHash(self, index: int) -> str:
         return str(self.newPop.flat[index].get_hash())
 
-    def start_evolution(self, generation_limit: int = 100) -> []:
+    def start_evolution(self, generation_limit: int = 100, offspring_multiplier : int = 25) -> []:
         for generation in range(generation_limit):
             mate1 = rnd.choice(self.newPop.flat)
             mate = rnd.choice(self.newPop.flat)
-            fitness = self.__fitness(mate1, self.newPop.flat,
-                                     rnd.randrange(0, 50))
-            num_mutations = rnd.randrange(1, 5)
-            prob_mutation = rnd.randrange(1, 5)
-            child = self.__mutation(self.__crossover(mate1, mate))
-            mate1.add_children(child)
-            mate.add_children(child)
-            np.append(self.newPop, child)
-            self.class_EvolutionDF = self.class_EvolutionDF.append(
-                {'mate1': str(mate.get_body()), 'mate2': str(mate1.get_body()), 'fitness': fitness,
-                 'mutation_chance': prob_mutation, 'body': str(child.get_body()), 'childhash': child.get_hash()}, ignore_index = True)
+            for offspring in range(offspring_multiplier):
+                fitness = self.__fitness(mate1, self.newPop.flat,
+                                         rnd.randrange(0, 50))
+                prob_mutation = rnd.randrange(1, 5)
+                child = self.__mutation(self.__crossover(mate1, mate))
+                mate1.add_children(child)
+                mate.add_children(child)
+                np.append(self.newPop, child)
+                self.class_EvolutionDF = self.class_EvolutionDF.append(
+                    {'mate1': str(mate.get_body()), 'mate2': str(mate1.get_body()), 'fitness': fitness,
+                     'mutation_chance': prob_mutation, 'body': str(child.get_body()), 'childhash': child.get_hash()}, ignore_index = True)
 
     def __fitness(self, entity: 'Model.Entity', entities: ['Model.Entity'], weight_limit: int) -> int:
         weight = 0  # weight = length of bodytext
