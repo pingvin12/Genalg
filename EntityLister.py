@@ -10,7 +10,7 @@ class EntityLister:
 
     def __init__(self, sol_per_pop: int, num_weights: int, genes: np.array):
         self.class_EvolutionDF = pd.DataFrame(
-            columns=['mate1', 'mate2', 'fitness', 'mutation_chance', 'body', 'childhash'])
+            columns=['mate1', 'mate2', 'fitness', 'mutation_chance', 'child_genes', 'childhash'])
         self.newPop = np.empty((sol_per_pop, num_weights), dtype=object)
         self.newPop.flat = [Model.Entity.Entity(np.random.choice(genes, size=1)) for _ in self.newPop.flat]
 
@@ -27,32 +27,30 @@ class EntityLister:
         return str(self.newPop.flat[index].get_hash())
 
     def start_evolution(self, generation_limit: int = 100, offspring_multiplier : int = 25) -> []:
+        x = 0
         for generation in range(generation_limit):
             mate1 = rnd.choice(self.newPop.flat)
             mate = rnd.choice(self.newPop.flat)
             for offspring in range(offspring_multiplier):
                 fitness = self.__fitness(mate1, self.newPop.flat,
-                                         rnd.randrange(0, 50))
+                                         5000)
                 prob_mutation = rnd.randrange(1, 5)
-                child = self.__mutation(self.__crossover(mate1, mate))
+                child = self.__mutation(self.__crossover(mate1, mate), probability=prob_mutation)
                 mate1.add_children(child)
                 mate.add_children(child)
                 np.append(self.newPop, child)
-                self.class_EvolutionDF = self.class_EvolutionDF.append(
-                    {'mate1': str(mate.get_body()), 'mate2': str(mate1.get_body()), 'fitness': fitness,
-                     'mutation_chance': prob_mutation, 'body': str(child.get_body()), 'childhash': child.get_hash()}, ignore_index = True)
+                self.class_EvolutionDF.loc[x] = [ str(mate.get_body()[0]), str(mate1.get_body()[0]), fitness, prob_mutation, str(child.get_body()), str(child.get_hash()) ]
+                x = x + 1
 
     def __fitness(self, entity: 'Model.Entity', entities: ['Model.Entity'], weight_limit: int) -> int:
         weight = 0  # weight = length of bodytext
-        value = 0
-        for i, chunk in enumerate(entities):
-            for child in chunk.get_children():
-                if entity.get_body() == child.get_body():
-                    weight += len(child.get_body())
-                    value += child.get_body()
-                if weight > weight_limit:
-                    return 0
-        return value
+        for e in entities:
+            for x in range(len(entity.get_body())):
+                if e.get_body()[x] == entity.get_body()[x]:
+                    weight += 1
+            if weight > weight_limit:
+                return 0
+        return weight
 
     def __selection_pair(self, Population: ['Model.Entity'], weight_limit: int) -> 'Model.Entity':
         return choices(
@@ -64,30 +62,29 @@ class EntityLister:
 
     def __crossover(self, a: 'Model.Entity', b: 'Model.Entity') -> 'Model.Entity':
         diff = None
-        cycle1 = rnd.choice(a.get_body()[0])
-        cycle2 = rnd.choice(b.get_body()[0])
+        cycle1 = a.get_body()[0][:len(a.get_body())//2]
+        cycle2 = b.get_body()[0][len(b.get_body()[0])//2:]
+        switch = rnd.randint(0,1)
         if len(cycle1) > len(cycle2):
             diff = len(cycle1) - len(cycle2)
         else:
-            diff = len(cycle1) - len(cycle2)
-        halfa = str(cycle1[0:diff] + cycle2[diff:len(cycle2)])
-        halfb = str(cycle2[0:diff] + cycle1[diff:len(cycle1)])
-        x = Model.Entity.Entity('')
-        if halfa > halfb:
-            x.set_body(halfa)
-        else:
-            x.set_body(halfb)
-        return x
+            diff = len(cycle2) - len(cycle1)
+        if len(cycle1) > 2 and len(cycle2) > 2:
+            if switch > 0:
+                cycle1 = cycle1.join((rnd.choice(cycle1)) for x in range(cycle1))
+            else:
+                cycle2 = cycle2.join((rnd.choice(cycle2)) for x in range(cycle2))
+        half = cycle1 + cycle2
+        return Model.Entity.Entity(half)
 
     def __mutation(self, entity: 'Model.Entity', num_ofmutations: int = 1, probability: float = 1.5) -> 'Model.Entity':
         f = None
         for _ in range(num_ofmutations):
-            index = rnd.randint(0, len(entity.get_body()[0]))
+            index = rnd.randint(0, len(entity.get_body())-1)
             f = entity.get_body()
-            if index != 0:
-                f = f[0:rnd.randrange(0, index)]
-        x = Model.Entity.Entity(f)
-        return x
+            if len(entity.get_body()) == 0 : f[index] = rnd.choice([char for char in entity.get_body()])
+        entity.set_body(f)
+        return entity
 
     def __exportPopulation(self):
         pd.DataFrame(self.newPop).to_excel('Exported.xlsx')

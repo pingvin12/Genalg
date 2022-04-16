@@ -10,7 +10,7 @@ class Entity:
     def get_body(self) -> str: return self.body
     def set_body(self, body : str): self.body = body
 
-    def get_hash(self) -> str: return self.hash
+    def get_hash(self) -> str: return str(self.hash)
 
     def get_parent(self) -> 'Entity': return self.parent
 

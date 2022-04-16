@@ -1,6 +1,6 @@
 import numpy as np
 import EntityLister as eli
-
+import EntitySolverList as els
 if __name__ == '__main__':
     filex = open('text.txt', 'r') # Everything is loaded from a text file
     genes = []
@@ -23,3 +23,7 @@ if __name__ == '__main__':
     el.start_evolution(generationlimit, offspringmultiplier)
     el.getEvolutionDF().to_excel('Evolution.xlsx')
     print('You can now view the simulation in the Evolution.xlsx file.')
+    print('Generating probabilities.xlsx now...')
+    esl = els.EntitySolver(genes)
+    esl.runSimulation()
+    print('Done! you may exit now.')
