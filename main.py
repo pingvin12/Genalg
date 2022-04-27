@@ -3,15 +3,7 @@ import EntityLister as eli
 import EntitySolverList as els
 if __name__ == '__main__':
     filex = open('text.txt', 'r') # Everything is loaded from a text file
-    genes = []
-
-    for x in filex.readlines():
-        s = x.split()
-        if len(s) == 0: # loading every sentence to an array for better handling
-            continue
-        else:
-            for f in s:
-                genes.append(f)
+    genes = [x for x in filex.readlines() if len(x) != 0]
     genes = np.array(genes, dtype=object)
     print(f'Please type in the input values in the following order:\n initial population amount, max amount of weight, generation limit, offspring multiplier\n don\'t worry error messages may appear, it\'s completely normal.')
     init_pop = int(input())
