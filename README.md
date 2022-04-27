@@ -1,4 +1,4 @@
-# GeneticAlgStrSimilarity
+# Genalg
 A Genetic algorithm solution made with python.
 
 
